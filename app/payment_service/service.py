@@ -1,8 +1,18 @@
+from typing import Optional
+
 from .models import PaymentStatus, PaymentTransaction
 
 
 class PaymentService:
-    """Core payment transaction service."""
+    """Core payment transaction service.
+
+    The repository is optional during the in-memory development phase.
+    This preserves backwards compatibility with the existing unit tests
+    while allowing persistence to be introduced incrementally.
+    """
+
+    def __init__(self, repository: Optional[object] = None) -> None:
+        self.repository = repository
 
     def create_payment(
         self,
@@ -20,6 +30,8 @@ class PaymentService:
             currency=currency.upper(),
         )
 
+        self._save(payment)
+
         return payment
 
     def authorise_payment(
@@ -27,6 +39,7 @@ class PaymentService:
         payment: PaymentTransaction,
     ) -> PaymentTransaction:
         payment.transition_to(PaymentStatus.AUTHORISED)
+        self._save(payment)
         return payment
 
     def start_processing(
@@ -34,6 +47,7 @@ class PaymentService:
         payment: PaymentTransaction,
     ) -> PaymentTransaction:
         payment.transition_to(PaymentStatus.PROCESSING)
+        self._save(payment)
         return payment
 
     def complete_payment(
@@ -41,6 +55,7 @@ class PaymentService:
         payment: PaymentTransaction,
     ) -> PaymentTransaction:
         payment.transition_to(PaymentStatus.COMPLETED)
+        self._save(payment)
         return payment
 
     def fail_payment(
@@ -48,6 +63,7 @@ class PaymentService:
         payment: PaymentTransaction,
     ) -> PaymentTransaction:
         payment.transition_to(PaymentStatus.FAILED)
+        self._save(payment)
         return payment
 
     def start_reconciliation(
@@ -55,4 +71,24 @@ class PaymentService:
         payment: PaymentTransaction,
     ) -> PaymentTransaction:
         payment.transition_to(PaymentStatus.RECONCILING)
+        self._save(payment)
         return payment
+
+    def _save(self, payment: PaymentTransaction) -> None:
+        """Persist the payment when a repository is configured.
+
+        The repository interface will be introduced properly in the
+        persistence layer. For now, this keeps the domain service usable
+        without external infrastructure.
+        """
+        if self.repository is None:
+            return
+
+        save_method = getattr(self.repository, "save", None)
+
+        if save_method is None:
+            raise AttributeError(
+                "Configured payment repository must provide a save() method."
+            )
+
+        save_method(payment)
