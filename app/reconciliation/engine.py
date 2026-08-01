@@ -18,6 +18,23 @@ class ReconciliationRecord:
     result: ReconciliationResult
     reason: str
 
+    @property
+    def status(self) -> str:
+        """
+        Compatibility representation used by the recovery workflow.
+
+        The canonical reconciliation result remains the ReconciliationResult
+        enum above. This property provides the simpler MATCH/MISMATCH/UNKNOWN
+        vocabulary expected by the coordinator tests and workflow.
+        """
+        mapping = {
+            ReconciliationResult.MATCHED: "MATCH",
+            ReconciliationResult.MISMATCH: "MISMATCH",
+            ReconciliationResult.UNKNOWN: "UNKNOWN",
+        }
+
+        return mapping[self.result]
+
 
 class ReconciliationEngine:
     """Compares internal payment state with external processor state."""

@@ -35,6 +35,18 @@ class SimulatedPaymentProcessor:
 
         return processor_payment
 
+    def accept_payment(
+        self,
+        payment: PaymentTransaction,
+    ) -> ProcessorPayment:
+        """
+        Accept a payment into the simulated processor.
+
+        Delegates to submit_payment() so payment creation has one
+        implementation.
+        """
+        return self.submit_payment(payment)
+
     def get_payment(
         self,
         transaction_id: str,
@@ -55,3 +67,31 @@ class SimulatedPaymentProcessor:
         processor_payment.status = status
 
         return processor_payment
+
+    def complete_payment(
+        self,
+        transaction_id: str,
+    ) -> ProcessorPayment:
+        """
+        Mark a processor-side payment as completed.
+        """
+        return self.update_status(
+            transaction_id,
+            PaymentStatus.COMPLETED,
+        )
+
+    def fail_payment(
+        self,
+        transaction_id: str,
+    ) -> ProcessorPayment:
+        """
+        Mark a processor-side payment as failed.
+        """
+        return self.update_status(
+            transaction_id,
+            PaymentStatus.FAILED,
+        )
+
+
+# Compatibility alias used by the recovery workflow and tests.
+PaymentProcessor = SimulatedPaymentProcessor
