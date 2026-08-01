@@ -34,6 +34,33 @@ class PaymentService:
 
         return payment
 
+    def get_payment(
+        self,
+        transaction_id: str,
+    ) -> PaymentTransaction:
+        """Retrieve a payment by transaction ID."""
+
+        if self.repository is None:
+            raise ValueError(
+                "Payment repository is not configured."
+            )
+
+        get_method = getattr(self.repository, "get", None)
+
+        if get_method is None:
+            raise AttributeError(
+                "Configured payment repository must provide a get() method."
+            )
+
+        payment = get_method(transaction_id)
+
+        if payment is None:
+            raise ValueError(
+                f"Payment {transaction_id} was not found."
+            )
+
+        return payment
+
     def authorise_payment(
         self,
         payment: PaymentTransaction,
@@ -81,6 +108,7 @@ class PaymentService:
         persistence layer. For now, this keeps the domain service usable
         without external infrastructure.
         """
+
         if self.repository is None:
             return
 
