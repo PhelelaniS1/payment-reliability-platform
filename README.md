@@ -1,4 +1,4 @@
-# 💳 Payment Reliability Platform
+# 💳 Electrum Payment Reliability Platform
 
 > A production-style payment reliability platform demonstrating **transaction-state reconciliation, automated recovery, observability, and reliability engineering practices**.
 
