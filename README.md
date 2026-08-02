@@ -119,7 +119,7 @@ The primary objectives of this project are to:
                                      ▼
                               Record Outcome
 
-## 🎯 Why This Project Is Relevant to Electrum
+🎯 Why This Project Is Relevant to Electrum
 
 This project was developed as a practical demonstration of the reliability challenges that can arise in payment-processing environments.
 
