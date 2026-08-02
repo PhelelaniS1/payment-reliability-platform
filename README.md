@@ -118,6 +118,27 @@ The primary objectives of this project are to:
                                      │
                                      ▼
                               Record Outcome
+
+## 🎯 Why This Project Is Relevant to Electrum
+
+This project was developed as a practical demonstration of the reliability challenges that can arise in payment-processing environments.
+
+The design focuses on problems that are particularly relevant to payment technology platforms, including:
+
+- 🔄 Transaction-state inconsistencies
+- 🛡️ Failure detection and recovery
+- 📊 Application and business-level observability
+- 🚨 Operational visibility
+- ♻️ Automated recovery workflows
+- 🔍 Reconciliation between distributed systems
+- 📈 Reliability-focused metrics
+- 🐳 Containerized service operations
+- ☁️ Production-oriented engineering practices
+
+The project was also designed with the **Core Reliability Engineer / SRE challenges at Electrum** in mind, particularly around payment reliability, observability, resilience, automation, and safe recovery.
+
+> **Note:** This is an independent portfolio project and is not affiliated with, sponsored by, or endorsed by Electrum.
+
 🧩 Core Components
 💳 Payment API
 
