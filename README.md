@@ -1,144 +1,193 @@
-# Payment Reliability Platform
+# 💳 Payment Reliability Platform
 
-> A production-style payment reliability platform demonstrating transaction-state reconciliation, automated recovery, observability, and reliability engineering practices.
+> A production-style payment reliability platform demonstrating **transaction-state reconciliation, automated recovery, observability, and reliability engineering practices**.
+
+<p align="center">
+
+**FastAPI** • **Python 3.12** • **Docker** • **Prometheus** • **Grafana** • **Pytest**
+
+</p>
 
 ---
 
-## Overview
+## 📋 Overview
 
 The **Payment Reliability Platform** simulates a payment service interacting with an external payment processor.
 
-The project models a common distributed-systems reliability problem:
+The project focuses on a common distributed-systems reliability problem:
 
 > **What happens when two systems disagree about the state of a transaction?**
 
-The platform detects transaction-state inconsistencies, evaluates recovery policies, executes recovery actions, and exposes operational metrics for monitoring and observability.
+The platform is designed to detect transaction-state inconsistencies, evaluate recovery policies, execute recovery actions, and provide operational visibility through application and business-level metrics.
+
+### The platform demonstrates
+
+- 💳 Payment transaction processing
+- 🔄 Transaction-state reconciliation
+- 🧠 Automated recovery decisions
+- 🛠️ Recovery execution tracking
+- 📊 Prometheus metrics
+- 📈 Grafana observability
+- ❤️ Application health checks
+- 🐳 Docker containerisation
+- 🧪 Automated testing
+- ⚙️ Reliability engineering principles
 
 ---
 
-## Project Objectives
+## 🎯 Project Objectives
 
-- Simulate a payment-processing environment
+The primary objectives of this project are to:
+
+- Simulate a production-style payment-processing environment
 - Model internal and external transaction states
-- Detect payment-state inconsistencies
+- Detect transaction-state inconsistencies
 - Implement payment-state reconciliation
 - Automate recovery decisions
 - Track recovery actions and outcomes
-- Expose application and business-level metrics
-- Provide service health checks
-- Containerize the application
-- Provide monitoring with Prometheus
-- Provide observability with Grafana
-- Demonstrate practical reliability engineering principles
+- Expose technical and business-level telemetry
+- Provide application health monitoring
+- Containerise the application
+- Orchestrate services with Docker Compose
+- Monitor the platform using Prometheus
+- Visualise operational data using Grafana
 
 ---
 
-## Architecture
+# 🏗️ Architecture
 
 ```text
-                         +----------------------+
-                         |        Client        |
-                         +----------+-----------+
-                                    |
-                                    v
-                         +----------------------+
-                         |       FastAPI        |
-                         |         API          |
-                         +----------+-----------+
-                                    |
-              +---------------------+---------------------+
-              |                     |                     |
-              v                     v                     v
-      +---------------+     +---------------+     +-------------------+
-      |    Payment    |     |   Processor   |     |  Reconciliation   |
-      |    Service    |     |   Simulator   |     |    & Recovery     |
-      +---------------+     +---------------+     +---------+---------+
-                                                          |
-                                                          v
-                                                +-------------------+
-                                                |    Prometheus     |
-                                                |      Metrics      |
-                                                +---------+---------+
-                                                          |
-                                                          v
-                                                +-------------------+
-                                                |      Grafana      |
-                                                |   Observability   |
-                                                +-------------------+
-
-
-Payment Reliability Workflow
-Payment Request
-       |
-       v
-Create Transaction
-       |
-       v
-Payment Processor
-       |
-       +-----------------------+
-       |                       |
-       v                       v
-Internal State          Processor State
-       |                       |
-       +-----------+-----------+
-                   |
-                   v
-            Reconciliation
-                   |
-                   v
-          States Consistent?
-             /           \
-           Yes            No
-            |              |
-            v              v
-        Complete       Recovery
-                           |
-                           v
-                    Recovery Action
-                           |
-                           v
-                    Record Outcome
-Core Components
-Payment API
+                         ┌──────────────────────┐
+                         │        Client        │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │       FastAPI        │
+                         │         API          │
+                         └──────────┬───────────┘
+                                    │
+              ┌─────────────────────┼─────────────────────┐
+              │                     │                     │
+              ▼                     ▼                     ▼
+      ┌───────────────┐     ┌───────────────┐     ┌───────────────────┐
+      │    Payment    │     │   Processor   │     │  Reconciliation   │
+      │    Service    │     │   Simulator   │     │    & Recovery     │
+      └───────────────┘     └───────────────┘     └─────────┬─────────┘
+                                                            │
+                                                            ▼
+                                                   ┌───────────────────┐
+                                                   │    Prometheus     │
+                                                   │      Metrics      │
+                                                   └─────────┬─────────┘
+                                                             │
+                                                             ▼
+                                                   ┌───────────────────┐
+                                                   │      Grafana      │
+                                                   │   Observability   │
+                                                   └───────────────────┘
+🔄 Payment Reliability Workflow
+                         Payment Request
+                                │
+                                ▼
+                       Create Transaction
+                                │
+                                ▼
+                       Payment Processor
+                                │
+                 ┌──────────────┴──────────────┐
+                 │                             │
+                 ▼                             ▼
+          Internal State                Processor State
+                 │                             │
+                 └──────────────┬──────────────┘
+                                │
+                                ▼
+                         Reconciliation
+                                │
+                                ▼
+                      States Consistent?
+                         │           │
+                       YES           NO
+                         │           │
+                         ▼           ▼
+                     Complete     Recovery
+                                     │
+                                     ▼
+                              Recovery Action
+                                     │
+                                     ▼
+                              Record Outcome
+🧩 Core Components
+💳 Payment API
 
 The FastAPI application provides the HTTP interface for the platform.
 
-Responsibilities include:
-
+Responsibilities
 Payment creation
 Request validation
 Transaction lifecycle management
+API responses
 Health checks
 Prometheus metrics
-API responses
-Payment Service
+⚙️ Payment Service
 
 The Payment Service manages the internal representation and lifecycle of payment transactions.
 
-It is responsible for maintaining payment state and coordinating payment processing.
-
-Simulated Payment Processor
+Responsibilities
+Maintain transaction state
+Create payment transactions
+Coordinate payment processing
+Track payment lifecycle information
+🌐 Simulated Payment Processor
 
 The simulated processor represents an external payment provider.
 
-It allows the platform to model situations where the processor's transaction state differs from the internal application's state.
+It allows the platform to model situations where the external processor's transaction state differs from the internal application's state.
 
-Reconciliation Engine
+This provides a controlled environment for testing reconciliation and recovery behaviour.
 
-The reconciliation engine compares transaction state between the internal payment service and the external processor.
+🔄 Reconciliation Engine
 
-It identifies inconsistencies that require further action.
+The Reconciliation Engine compares transaction state between the internal payment service and the external processor.
 
-Recovery Engine
+It identifies situations where the two systems disagree and determines whether additional recovery processing is required.
 
-The recovery engine evaluates reconciliation results and determines the appropriate recovery action.
+Example
+Internal System              External Processor
+      │                              │
+      │   INITIATED                  │
+      │                              │
+      │                         COMPLETED
+      │                              │
+      └──────────────┬───────────────┘
+                     │
+                     ▼
+              Reconciliation
+                     │
+                     ▼
+              State Difference
+                     │
+                     ▼
+              Recovery Logic
+🛠️ Recovery Engine
 
-Recovery actions and their execution outcomes are tracked through application metrics.
+The Recovery Engine evaluates reconciliation results and selects an appropriate recovery action.
 
-Observability
+The platform records:
 
-The platform exposes Prometheus-compatible metrics covering both technical and business-level activity.
+Recovery actions selected
+Recovery execution attempts
+Recovery execution outcomes
+Recovery-related metrics
+
+This provides visibility into how the system responds to inconsistent payment states.
+
+📊 Observability
+
+Observability is a core part of the platform.
+
+The application exposes Prometheus-compatible metrics covering both technical and business-level activity.
 
 Application Metrics
 HTTP request count
@@ -157,64 +206,68 @@ Recovery execution outcomes
 Key Metrics
 http_requests_total
 http_request_duration_seconds
+
 payments_created_total
 payment_failures_total
+
 reconciliation_attempts_total
 reconciliation_results_total
+
 recovery_actions_total
 recovery_executions_total
-Technology Stack
+🛠️ Technology Stack
 Technology	Purpose
 Python 3.12	Application development
-FastAPI	REST API
+FastAPI	REST API framework
 Pydantic	Data validation and models
 Uvicorn	ASGI application server
 Prometheus	Metrics collection
-Grafana	Monitoring and visualization
-Docker	Application containerization
+Grafana	Monitoring and visualisation
+Docker	Application containerisation
 Docker Compose	Service orchestration
 Pytest	Automated testing
 PowerShell	Local administration and testing
-Project Structure
+📁 Project Structure
 payment-reliability-platform/
-|
-+-- app/
-|   +-- main.py
-|   +-- metrics.py
-|   +-- payment_service/
-|       +-- models.py
-|       +-- processor.py
-|       +-- reconciliation.py
-|       +-- recovery.py
-|
-+-- monitoring/
-|   +-- prometheus/
-|   |   +-- prometheus.yml
-|   |
-|   +-- grafana/
-|
-+-- tests/
-|
-+-- Dockerfile
-+-- docker-compose.yml
-+-- requirements.txt
-+-- .dockerignore
-+-- .gitignore
-+-- README.md
-+-- CONTRIBUTORS.md
-Getting Started
+│
+├── app/
+│   ├── main.py
+│   ├── metrics.py
+│   │
+│   └── payment_service/
+│       ├── models.py
+│       ├── processor.py
+│       ├── reconciliation.py
+│       └── recovery.py
+│
+├── monitoring/
+│   ├── prometheus/
+│   │   └── prometheus.yml
+│   │
+│   └── grafana/
+│
+├── tests/
+│
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .dockerignore
+├── .gitignore
+├── README.md
+└── CONTRIBUTORS.md
+🚀 Getting Started
 Prerequisites
 
-Before running the platform, ensure the following are installed:
+Before running the platform, make sure you have:
 
 Docker
 Docker Compose
 Git
 Python 3.12+
-Clone the Repository
+1️⃣ Clone the Repository
 git clone https://github.com/PhelelaniS1/payment-reliability-platform.git
 cd payment-reliability-platform
-Start the Platform
+2️⃣ Start the Platform
 
 Build and start all services:
 
@@ -229,8 +282,8 @@ Expected services:
 Service	Port	Purpose
 FastAPI	8000	Payment API
 Prometheus	9090	Metrics collection
-Grafana	3000	Monitoring and visualization
-Health Check
+Grafana	3000	Monitoring and visualisation
+❤️ Health Check
 
 The application exposes a health endpoint:
 
@@ -240,12 +293,12 @@ Test it with PowerShell:
 
 Invoke-RestMethod http://127.0.0.1:8000/health
 
-Expected result:
+Expected response:
 
 status  service
 ------  -------
 healthy payment-reliability-platform
-Create a Payment
+💳 Create a Payment
 
 Create a payment using the API:
 
@@ -264,7 +317,7 @@ Example response:
   "currency": "ZAR",
   "status": "INITIATED"
 }
-Prometheus
+📈 Prometheus
 
 Prometheus is available at:
 
@@ -274,31 +327,34 @@ Check Prometheus health:
 
 Invoke-RestMethod http://127.0.0.1:9090/-/healthy
 
-Expected result:
+Expected response:
 
 Prometheus Server is Healthy.
-Grafana
+
+Prometheus collects application and business-level telemetry from the FastAPI service.
+
+📊 Grafana
 
 Grafana is available at:
 
 http://127.0.0.1:3000
 
-Grafana can be used to visualize platform activity including:
+Grafana can be used to visualise:
 
-HTTP request rates
-Request latency
-Payment activity
-Payment failures
-Reconciliation activity
-Recovery activity
-Application health
-Application Metrics
+📈 HTTP request rates
+⏱️ Request latency
+💳 Payment activity
+❌ Payment failures
+🔄 Reconciliation activity
+🛠️ Recovery activity
+❤️ Application health
+🔎 Application Metrics
 
 The application's Prometheus metrics endpoint is:
 
 http://127.0.0.1:8000/metrics
 
-Inspect payment metrics with PowerShell:
+Inspect payment metrics:
 
 Invoke-RestMethod http://127.0.0.1:8000/metrics |
     Select-String "payments_created_total"
@@ -307,30 +363,34 @@ Inspect payment failure metrics:
 
 Invoke-RestMethod http://127.0.0.1:8000/metrics |
     Select-String "payment_failures_total"
-Docker Operations
 
-Check running containers:
+Inspect reconciliation metrics:
 
+Invoke-RestMethod http://127.0.0.1:8000/metrics |
+    Select-String "reconciliation"
+
+Inspect recovery metrics:
+
+Invoke-RestMethod http://127.0.0.1:8000/metrics |
+    Select-String "recovery"
+🐳 Docker Operations
+Check running containers
 docker compose ps
-
-View application logs:
-
+View application logs
 docker logs --tail 100 payment-reliability-platform
-
-Stop the platform:
-
+Follow application logs
+docker logs -f payment-reliability-platform
+Stop the platform
 docker compose down
-
-Rebuild the platform:
-
+Rebuild the platform
 docker compose up -d --build
-Testing
+🧪 Testing
 
 Run the automated test suite with:
 
 pytest
 
-The test suite covers the core payment reliability functionality, including:
+The test suite covers core payment reliability functionality, including:
 
 Payment processing
 Transaction state
@@ -339,22 +399,22 @@ Reconciliation
 Recovery
 API behaviour
 Metrics
-Reliability Engineering Concepts
+🔐 Reliability Engineering Concepts
 
 This project demonstrates practical reliability engineering concepts including:
 
-Health checks
-Observability
-Metrics-driven monitoring
-Distributed-state reconciliation
-Failure detection
-Automated recovery
-Recovery tracking
-Containerized services
-API reliability
-Business-level telemetry
-Operational visibility
-Why This Project Matters
+❤️ Health checks
+📊 Observability
+📈 Metrics-driven monitoring
+🔄 Distributed-state reconciliation
+🚨 Failure detection
+🛠️ Automated recovery
+📝 Recovery tracking
+🐳 Containerised services
+🌐 API reliability
+💼 Business-level telemetry
+🔎 Operational visibility
+💡 Why This Project Matters
 
 Payment systems commonly depend on multiple services and external providers.
 
@@ -362,63 +422,69 @@ When these systems maintain separate representations of a transaction, temporary
 
 For example:
 
-Internal System       External Processor
-     INITIATED              COMPLETED
-          \                    /
-           \                  /
-            +----------------+
-            | Reconciliation |
-            +----------------+
-                    |
-                    v
-             Recovery Logic
+Internal System	External Processor	Potential Problem
+INITIATED	COMPLETED	Internal state is behind
+COMPLETED	PENDING	External state is behind
+FAILED	COMPLETED	Transaction states conflict
+PENDING	FAILED	Recovery may be required
 
-A reliable payment platform must be able to detect these inconsistencies, determine the correct course of action, and provide sufficient observability for operators to understand what happened.
+A reliable payment platform must be able to:
+
+Detect state inconsistencies
+Compare transaction states
+Determine the appropriate recovery action
+Execute recovery logic
+Record the outcome
+Expose sufficient telemetry for operators
 
 This project demonstrates that workflow through a simplified, production-style architecture.
 
-Project Status
+📌 Project Status
+✅ Completed
 
-Completed
+The platform currently includes:
 
-The platform includes:
-
-FastAPI payment API
-Payment transaction models
-Simulated payment processor
-Payment-state reconciliation
-Recovery workflow
-Recovery execution tracking
-Prometheus metrics
-Grafana observability
-Docker containerization
-Docker Compose orchestration
-Application health checks
-Payment creation validation
-Automated tests
-Author
-
+✅ FastAPI payment API
+✅ Payment transaction models
+✅ Simulated payment processor
+✅ Payment-state reconciliation
+✅ Recovery workflow
+✅ Recovery execution tracking
+✅ Prometheus metrics
+✅ Grafana observability
+✅ Docker containerisation
+✅ Docker Compose orchestration
+✅ Application health checks
+✅ Payment creation validation
+✅ Automated tests
+👤 Author
 Phelelani Sithole
 
 Cloud & Platform Engineering | AWS | Kubernetes | Docker | Terraform | CI/CD | Observability | Reliability Engineering
 
-GitHub:
+GitHub
 
 https://github.com/PhelelaniS1
 
-LinkedIn:
+LinkedIn
 
 https://www.linkedin.com/in/phelelanisithole/
 
-Contributors
+🤝 Contributors
 
-See CONTRIBUTORS.md.
+Contributions and improvements are welcome.
 
-License
+See CONTRIBUTORS.md for contributor information and contribution guidelines.
 
-This project is intended for educational, portfolio, and demonstration purposes.
+📄 License
 
-Acknowledgements
+This project is intended for:
+
+Educational purposes
+Portfolio demonstration
+Reliability engineering experimentation
+Cloud and platform engineering learning
+⭐ Acknowledgements
 
 Built as a practical demonstration of modern:
 
@@ -429,3 +495,4 @@ Site Reliability Engineering
 Observability
 Distributed Systems
 Payment Reliability
+Automated Recovery
