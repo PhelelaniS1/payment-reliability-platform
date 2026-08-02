@@ -1,6 +1,19 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+import time
 
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
+from pydantic import BaseModel, Field
+from prometheus_client import generate_latest
+
+from app.metrics import (
+    HTTP_REQUESTS_TOTAL,
+    HTTP_REQUEST_DURATION_SECONDS,
+    PAYMENTS_CREATED_TOTAL,
+    RECONCILIATION_ATTEMPTS_TOTAL,
+    RECONCILIATION_RESULTS_TOTAL,
+    RECOVERY_ACTIONS_TOTAL,
+    RECOVERY_EXECUTIONS_TOTAL,
+)
 from app.payment_service.models import PaymentStatus, PaymentTransaction
 from app.payment_service.processor import (
     PaymentProcessor,
@@ -22,6 +35,29 @@ app = FastAPI(
     ),
     version="0.1.0",
 )
+
+
+@app.middleware("http")
+async def metrics_middleware(request, call_next):
+    start_time = time.perf_counter()
+
+    response = await call_next(request)
+
+    duration = time.perf_counter() - start_time
+    path = request.url.path
+
+    HTTP_REQUESTS_TOTAL.labels(
+        method=request.method,
+        path=path,
+        status=str(response.status_code),
+    ).inc()
+
+    HTTP_REQUEST_DURATION_SECONDS.labels(
+        method=request.method,
+        path=path,
+    ).observe(duration)
+
+    return response
 
 
 repository = PaymentRepository()
@@ -152,6 +188,14 @@ def health_check() -> dict[str, str]:
     }
 
 
+@app.get("/metrics")
+def metrics() -> Response:
+    return Response(
+        content=generate_latest(),
+        media_type="text/plain; version=0.0.4",
+    )
+
+
 @app.post(
     "/payments",
     response_model=PaymentResponse,
@@ -167,6 +211,7 @@ def create_payment(
         )
 
         processor.submit_payment(payment)
+        PAYMENTS_CREATED_TOTAL.inc()
 
     except ValueError as exc:
         raise HTTPException(
@@ -286,10 +331,36 @@ def reconcile_payment(
             detail=str(exc),
         ) from exc
 
+    # Record reconciliation attempt.
+    RECONCILIATION_ATTEMPTS_TOTAL.inc()
+
     result = recovery_coordinator.process(
         payment=payment,
         processor_payment=processor_payment,
     )
+
+    # Record reconciliation outcome.
+    RECONCILIATION_RESULTS_TOTAL.labels(
+        result=result.reconciliation.result.value,
+    ).inc()
+
+    # Record recovery action selected by the policy.
+    RECOVERY_ACTIONS_TOTAL.labels(
+        action=result.policy.action.value,
+    ).inc()
+
+    # Record recovery execution outcome.
+    if result.execution is not None:
+        outcome = (
+            "success"
+            if result.execution.success
+            else "failure"
+        )
+
+        RECOVERY_EXECUTIONS_TOTAL.labels(
+            action=result.execution.action.value,
+            outcome=outcome,
+        ).inc()
 
     payment_service._save(payment)
 
